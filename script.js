@@ -197,6 +197,9 @@ document.getElementById("skills-root").innerHTML = SKILLS.map(
     </div></div>`,
 ).join("");
 
+/* keep the "products shipped" stat in sync with the project lists above */
+document.getElementById("projects-count").dataset.count = PRO.length + PERSONAL.length;
+
 /* ---------- tabs ---------- */
 document.querySelectorAll(".tabs button").forEach((b) =>
   b.addEventListener("click", () => {
@@ -234,6 +237,7 @@ observeReveals();
 function countUp(scope) {
   scope.querySelectorAll("[data-count]").forEach((el) => {
     const target = +el.dataset.count;
+    const suffix = el.dataset.suffix || "";
     let cur = 0;
     const step = Math.max(1, Math.round(target / 45));
     const t = setInterval(() => {
@@ -242,7 +246,7 @@ function countUp(scope) {
         cur = target;
         clearInterval(t);
       }
-      el.textContent = cur;
+      el.textContent = cur + suffix;
     }, 22);
   });
 }
