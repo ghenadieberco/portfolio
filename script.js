@@ -65,7 +65,7 @@ const PRO = [
       "SCSS",
       "GitHub",
     ],
-    link: "https://nycsignalrepairs.com",
+    link: "https://service.nyctmc.nyc/",
     label: "NYC Signal Repairs",
     live: true,
   },
@@ -118,28 +118,17 @@ const PRO = [
 ];
 const PERSONAL = [
   {
-    t: "Job Search Tool (Beta)",
+    t: "Calendar",
     role: "Personal Project",
     acc: [
-      "Leverages Adzuna's API to find and display US job listings.",
-      "Clean, responsive search experience — try it out.",
+      "Create calendar events and share them with the people who need them.",
+      "Built for shared occasions like birthdays, kept in sync among relatives.",
+      "Fully localized in English and Romanian.",
     ],
-    tech: ["React", "TypeScript", "REST API", "SCSS"],
-    link: "https://www.ghenadie-berco.com/projects/personal/job-search-tool",
+    tech: [],
+    link: "https://calendar.ghenadie-berco.com",
     label: "Try it",
     live: true,
-  },
-  {
-    t: "AI Assistant (Beta)",
-    role: "Personal Project",
-    acc: [
-      "An experimental AI-powered assistant baked into the portfolio.",
-      "Explores conversational UX patterns on the web.",
-    ],
-    tech: ["React", "TypeScript", "LLM API"],
-    link: "",
-    label: "In development",
-    live: false,
   },
 ];
 const SKILLS = [
@@ -186,7 +175,7 @@ function cardHTML(p, i) {
     <div class="num-tag">${String(i + 1).padStart(2, "0")}</div>
     <h3>${p.t}</h3><div class="role">${p.role}</div>
     <ul>${p.acc.map((a) => `<li>${a}</li>`).join("")}</ul>
-    <div class="chips">${p.tech.map((t) => `<span class="chip">${t}</span>`).join("")}</div>
+    ${p.tech.length ? `<div class="chips">${p.tech.map((t) => `<span class="chip">${t}</span>`).join("")}</div>` : ""}
     ${
       p.live && p.link
         ? `<a class="link live hoverable" href="${p.link}" target="_blank" rel="noopener">${p.label}</a>`
@@ -276,17 +265,28 @@ addEventListener("scroll", () => {
 
 /* ---------- mobile menu ---------- */
 const burger = document.getElementById("burger"),
-  navlinks = document.getElementById("navlinks");
-burger.addEventListener("click", () => {
-  burger.classList.toggle("open");
-  navlinks.classList.toggle("open");
+  navlinks = document.getElementById("navlinks"),
+  scrim = document.getElementById("nav-scrim"),
+  desktop = matchMedia("(min-width:901px)");
+
+function setMenu(open) {
+  burger.classList.toggle("open", open);
+  navlinks.classList.toggle("open", open);
+  scrim.classList.toggle("open", open);
+  burger.setAttribute("aria-expanded", String(open));
+  document.body.classList.toggle("nav-open", open);
+}
+burger.addEventListener("click", () => setMenu(!navlinks.classList.contains("open")));
+scrim.addEventListener("click", () => setMenu(false));
+navlinks.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setMenu(false)));
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && navlinks.classList.contains("open")) {
+    setMenu(false);
+    burger.focus();
+  }
 });
-navlinks.querySelectorAll("a").forEach((a) =>
-  a.addEventListener("click", () => {
-    burger.classList.remove("open");
-    navlinks.classList.remove("open");
-  }),
-);
+/* resizing past the breakpoint would otherwise strand the scroll lock */
+desktop.addEventListener("change", (e) => e.matches && setMenu(false));
 
 /* ---------- card cursor glow / tilt ---------- */
 document.addEventListener("mousemove", (e) => {
